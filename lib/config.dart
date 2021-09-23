@@ -31,7 +31,7 @@ const List<Map<String, String>> CategoryData = [
   },
   {
     "icon": "office",
-    "category": "games",
+    "category": "office",
     "title": "office",
   },
   {
@@ -51,7 +51,7 @@ const List<Map<String, String>> CategoryData = [
   },
   {
     "icon": "theme",
-    "category": "video",
+    "category": "themes",
     "title": "beautify",
   },
   {
