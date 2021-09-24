@@ -3,6 +3,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:spark_store/models/category_json.dart';
 
+import '../config.dart';
+
 class AppCardView extends StatefulWidget {
   final CategoryJson data;
 
@@ -28,8 +30,7 @@ class AppCardView extends StatefulWidget {
     required this.data,
     required this.maxWidth,
     required this.onTap,
-    this.defaultAppIconURL =
-        "https://d.store.deepinos.org.cn//store/tools/dde-dock-graphics-plugin/icon.png",
+    this.defaultAppIconURL = DefaultAppIcon,
     this.colSize = 3,
     this.borderRadiusSize = 12,
     this.bgColor = Colors.black38,

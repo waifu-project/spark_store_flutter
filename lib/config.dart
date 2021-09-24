@@ -60,3 +60,6 @@ const List<Map<String, String>> CategoryData = [
     "title": "others",
   },
 ];
+
+const DefaultAppIcon =
+    "https://d.store.deepinos.org.cn//store/tools/dde-dock-graphics-plugin/icon.png";
