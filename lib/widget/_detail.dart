@@ -4,8 +4,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:card_swiper/card_swiper.dart';
 import 'package:macos_ui/macos_ui.dart';
+import 'package:spark_store/config.dart';
 import 'package:spark_store/models/category_json.dart';
 import 'package:spark_store/widget/_listItem.dart';
+
+import '_appicon.dart';
 
 class DetailPage extends StatefulWidget {
   final CategoryJson data;
@@ -33,6 +36,10 @@ class _DetailPageState extends State<DetailPage> {
     return _result;
   }
 
+  bool get _bannerCanbeRender {
+    return _banners.length >= 1;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -45,14 +52,16 @@ class _DetailPageState extends State<DetailPage> {
               Container(
                 child: Column(
                   children: [
-                    Image.network(
-                      widget.data.icons ?? "",
+                    AppIcon(
+                      url: widget.data.icons,
                       width: 120,
                     ),
-                    SizedBox(height: 12,),
+                    SizedBox(
+                      height: 12,
+                    ),
                     PushButton(
                       color: Colors.blue,
-                      child: Text('install'),
+                      child: Text('Install'),
                       buttonSize: ButtonSize.large,
                       onPressed: () {
                         print('button pressed');
@@ -61,93 +70,150 @@ class _DetailPageState extends State<DetailPage> {
                   ],
                 ),
               ),
-              SizedBox(width: 42,),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    widget.data.name ?? "",
-                    style: TextStyle(
-                      fontSize: 32,
+              SizedBox(
+                width: 42,
+              ),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      width: double.infinity,
+                      child: Text(
+                        widget.data.name ?? "",
+                        style: TextStyle(
+                          fontSize: 32,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        maxLines: 2,
+                      ),
                     ),
-                  ),
-                  SizedBox(height: 12,),
-                  ListSubItem(
-                    title: 'PkgName',
-                    content: widget.data.pkgname ?? "",
-                  ),
-                  ListSubItem(
-                    title: 'Version',
-                    content: widget.data.version ?? "",
-                  ),
-                  ListSubItem(
-                    title: 'Author',
-                    content: widget.data.author ?? "",
-                  ),
-                  ListSubItem(
-                    title: 'Official Site',
-                    content: widget.data.website ?? "",
-                  ),
-                  ListSubItem(
-                    title: 'Contributor',
-                    content: widget.data.contributor ?? "",
-                  ),
-                  ListSubItem(
-                    title: 'Update Time',
-                    content: widget.data.update ?? "",
-                  ),
-                  ListSubItem(
-                    title: 'Installed Size',
-                    content: widget.data.size ?? "",
-                  ),
-                ],
-              )
+                    SizedBox(
+                      height: 12,
+                    ),
+                    ListSubItem(
+                      title: 'PkgName',
+                      content: widget.data.pkgname ?? "",
+                    ),
+                    ListSubItem(
+                      title: 'Version',
+                      content: widget.data.version ?? "",
+                    ),
+                    ListSubItem(
+                      title: 'Author',
+                      content: widget.data.author ?? "",
+                    ),
+                    ListSubItem(
+                      title: 'Official Site',
+                      content: widget.data.website ?? "",
+                    ),
+                    ListSubItem(
+                      title: 'Contributor',
+                      content: widget.data.contributor ?? "",
+                    ),
+                    ListSubItem(
+                      title: 'Update Time',
+                      content: widget.data.update ?? "",
+                    ),
+                    ListSubItem(
+                      title: 'Installed Size',
+                      content: widget.data.size ?? "",
+                    ),
+                  ],
+                ),
+              ),
             ],
           ),
-          SizedBox(height: 42,),
+          SizedBox(
+            height: 42,
+          ),
           Text(
             "Info",
             style: TextStyle(
               fontSize: 20,
             ),
           ),
-          SizedBox(height: 12,),
-          Text(widget.data.more ?? ""),
-          SizedBox(height: 12,),
-          Text(
-            "Screenshots",
-            style: TextStyle(
-              fontSize: 20,
-            ),
+          SizedBox(
+            height: 12,
           ),
-          SizedBox(height: 12,),
-          Container(
-            width: double.infinity,
-            height: calcSwiperHeigth(MediaQuery.of(context).size),
-            // padding: EdgeInsets.symmetric(
-            //   horizontal: 42,
-            //   vertical: 12,
-            // ),
-            child: Swiper(
-              itemBuilder: (BuildContext context, int index) {
-                var _ = _banners[index];
-                return ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: Image.network(
-                    _,
-                    fit: BoxFit.fitHeight,
-                  ),
-                );
-              },
-              itemCount: _banners.length,
-              pagination: SwiperPagination(),
-              control: SwiperControl(
-                  iconPrevious: CupertinoIcons.back,
-                  iconNext: CupertinoIcons.forward),
-            ),
-          )
+          Text(widget.data.more ?? ""),
+          SizedBox(
+            height: 12,
+          ),
+          !_bannerCanbeRender
+              ? SizedBox.shrink()
+              : Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Screenshots",
+                      style: TextStyle(
+                        fontSize: 20,
+                      ),
+                    ),
+                    SizedBox(
+                      height: 12,
+                    ),
+                    Container(
+                      width: double.infinity,
+                      height: calcSwiperHeigth(MediaQuery.of(context).size),
+                      child: Swiper(
+                        itemBuilder: (BuildContext context, int index) {
+                          var _ = _banners[index];
+                          return GestureDetector(
+                            onTap: () {
+                              // TODO preview image
+                              // showScreenshot(context);
+                            },
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(12),
+                              child: Image.network(
+                                _,
+                                fit: BoxFit.fitHeight,
+                              ),
+                            ),
+                          );
+                        },
+                        itemCount: _banners.length,
+                        pagination:
+                            _banners.length >= 2 ? SwiperPagination() : null,
+                        control: _banners.length >= 2
+                            ? SwiperControl(
+                                iconPrevious: CupertinoIcons.back,
+                                iconNext: CupertinoIcons.forward,
+                              )
+                            : null,
+                      ),
+                    ),
+                  ],
+                ),
         ],
       ),
     );
   }
 }
+
+// showScreenshot(BuildContext context) {
+//   showDialog(
+//     context: context,
+//     builder: (_) => MacosAlertDialog(
+//       appIcon: FlutterLogo(
+//         size: 56,
+//       ),
+//       title: Text(
+//         'Alert Dialog with Primary Action',
+//         style: MacosTheme.of(context).typography.headline,
+//       ),
+//       message: Text(
+//         'This is an alert dialog with a primary action and no secondary action',
+//         textAlign: TextAlign.center,
+//         style: MacosTheme.of(context).typography.headline,
+//       ),
+//       primaryButton: PushButton(
+//         buttonSize: ButtonSize.large,
+//         child: Text('Primary'),
+//         onPressed: () {},
+//       ),
+//     ),
+//   );
+// }

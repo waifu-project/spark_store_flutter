@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:spark_store/models/category_json.dart';
+import 'package:spark_store/widget/_appicon.dart';
 
 import '../config.dart';
 
@@ -67,16 +68,9 @@ class _AppCardViewState extends State<AppCardView> {
             widget.maxWidth / widget.colSize - (widget.margin.horizontal * 1),
         child: Row(
           children: [
-            CachedNetworkImage(
+            AppIcon(
+              url: widget.data.icons,
               width: widget.maxWidth / widget.colSize / 3,
-              height: double.infinity,
-              fit: BoxFit.fitHeight,
-              imageUrl: widget.data.icons ?? widget.defaultAppIconURL,
-              placeholder: (context, url) => CupertinoActivityIndicator(),
-              errorWidget: (context, url, error) => Icon(
-                Icons.error,
-                size: 42,
-              ),
             ),
             Expanded(
               child: Column(

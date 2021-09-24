@@ -7,7 +7,7 @@ class ListSubItem extends StatefulWidget {
   final String content;
 
   bool get contentIsURL {
-    return isURL(content);
+    return isURL(content) && content.startsWith("http");
   }
 
   final Color titleColor;
@@ -33,24 +33,50 @@ class ListSubItem extends StatefulWidget {
 }
 
 class _ListSubItemState extends State<ListSubItem> {
+  bool _isHover = false;
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: widget.margin,
-      child: RichText(
-        text: TextSpan(
-            text: '${widget.title}: ',
-            style: TextStyle(
-              color: widget.titleColor,
-            ),
-            children: [
-              TextSpan(
-                text: widget.content,
+    return GestureDetector(
+      onTap: () {
+        if (widget.contentIsURL) {
+          launchURL(widget.content);
+        }
+      },
+      child: MouseRegion(
+        onHover: (_) {
+          setState(() {
+            _isHover = true;
+          });
+        },
+        onExit: (_) {
+          setState(() {
+            _isHover = false;
+          });
+        },
+        child: Container(
+          margin: widget.margin,
+          child: RichText(
+            text: TextSpan(
+                text: '${widget.title}: ',
                 style: TextStyle(
-                  color: widget.contentColor,
+                  color: widget.titleColor,
                 ),
-              ),
-            ]),
+                children: [
+                  TextSpan(
+                    mouseCursor: (!widget.contentIsURL)
+                        ? SystemMouseCursors.text
+                        : SystemMouseCursors.click,
+                    text: widget.content,
+                    style: TextStyle(
+                      color: widget.contentIsURL && _isHover
+                          ? Colors.blue
+                          : widget.contentColor,
+                    ),
+                  ),
+                ]),
+          ),
+        ),
       ),
     );
   }
