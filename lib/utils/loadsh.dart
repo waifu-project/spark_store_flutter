@@ -1,5 +1,7 @@
 // https://github.com/dart-league/validators/blob/master/lib/validators.dart
 
+import 'package:url_launcher/url_launcher.dart';
+
 shift(List l) {
   if (l.length >= 1) {
     var first = l.first;
@@ -13,7 +15,6 @@ RegExp _ipv4Maybe =
     new RegExp(r'^(\d?\d?\d)\.(\d?\d?\d)\.(\d?\d?\d)\.(\d?\d?\d)$');
 RegExp _ipv6 =
     new RegExp(r'^::|^::1|^([a-fA-F0-9]{1,4}::?){1,7}([a-fA-F0-9]{1,4})$');
-
 
 /// check if the string [str] is a URL
 ///
@@ -137,7 +138,6 @@ bool isURL(String? str,
   return true;
 }
 
-
 /// check if the string [str] is IP [version] 4 or 6
 ///
 /// * [version] is a String or an `int`.
@@ -187,3 +187,6 @@ bool isFQDN(String str,
   }
   return true;
 }
+
+void launchURL(_url) async =>
+    await canLaunch(_url) ? await launch(_url) : throw 'Could not launch $_url';
