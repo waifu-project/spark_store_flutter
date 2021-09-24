@@ -3,10 +3,12 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:macos_ui/macos_ui.dart';
+import 'package:spark_store/_enum.dart';
 import 'package:spark_store/_http.dart';
 import 'package:spark_store/widget/_app.dart';
 import 'config.dart';
 import 'models/category_json.dart';
+import 'widget/_detail.dart';
 
 extension StringExtension on String {
   String capitalize() {
@@ -22,20 +24,17 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MacosApp(
-      title: 'macos_ui example',
+      title: 'spark_store',
       theme: MacosThemeData.dark(),
       darkTheme: MacosThemeData.dark(),
       debugShowCheckedModeBanner: false,
-      home: MyHomePage(title: 'home page'),
+      home: MyHomePage(),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key? key, required this.title}) : super(key: key);
-
-  final String title;
-
+  MyHomePage({Key? key}) : super(key: key);
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
@@ -43,7 +42,18 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   bool isLoading = false;
 
-  int currentCategory = 2;
+  int currentCategory = 0;
+
+  PagePoint currentPagePoint = PagePoint.category;
+
+  set _currentPagePoint(PagePoint point) {
+    setState(() {
+      currentPagePoint = point;
+    });
+    // TODO http get app detail
+  }
+
+  CategoryJson currentDetailData = CategoryJson();
 
   List<CategoryJson> _data = [];
 
@@ -143,22 +153,35 @@ class _MyHomePageState extends State<MyHomePage> {
                 : SingleChildScrollView(
                     physics: BouncingScrollPhysics(),
                     child: LayoutBuilder(
-                      builder:
-                          (BuildContext context, BoxConstraints constraints) {
-                        return Wrap(
-                          crossAxisAlignment: WrapCrossAlignment.center,
-                          verticalDirection: VerticalDirection.down,
-                          children: [
-                            ..._data
-                                .map(
-                                  (e) => AppCardView(
-                                    data: e,
-                                    maxWidth: constraints.maxWidth,
-                                  ),
-                                )
-                                .toList(),
-                          ],
-                        );
+                      builder: (
+                        BuildContext context,
+                        BoxConstraints constraints,
+                      ) {
+                        return [
+                          Wrap(
+                            crossAxisAlignment: WrapCrossAlignment.center,
+                            verticalDirection: VerticalDirection.down,
+                            children: [
+                              ..._data
+                                  .map(
+                                    (e) => AppCardView(
+                                      data: e,
+                                      maxWidth: constraints.maxWidth,
+                                      onTap: (_data) {
+                                        setState(() {
+                                          currentDetailData = _data;
+                                        });
+                                        _currentPagePoint = PagePoint.detail;
+                                      },
+                                    ),
+                                  )
+                                  .toList(),
+                            ],
+                          ),
+                          DetailPage(
+                            data: currentDetailData,
+                          ),
+                        ][currentPagePoint.index];
                       },
                     ),
                   ),
@@ -172,12 +195,16 @@ class _MyHomePageState extends State<MyHomePage> {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              SvgPicture.asset("assets/icons/download.svg",
-                  width: 24,
-                  height: 24,
-                  color: Colors.white,
-                  semanticsLabel: 'A red up arrow'),
-              const SizedBox(width: 8.0),
+              SvgPicture.asset(
+                "assets/icons/download.svg",
+                width: 24,
+                height: 24,
+                color: Colors.white,
+                semanticsLabel: 'A red up arrow',
+              ),
+              const SizedBox(
+                width: 8.0,
+              ),
               Text('Download'),
             ],
           ),
@@ -186,8 +213,8 @@ class _MyHomePageState extends State<MyHomePage> {
           return SidebarItems(
             currentIndex: currentCategory,
             onChanged: (index) {
-              print('index: $index');
               _currentCategory = index;
+              _currentPagePoint = PagePoint.category;
             },
             scrollController: controller,
             items: [
