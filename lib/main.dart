@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:github_loading/github_loading.dart';
 import 'package:macos_ui/macos_ui.dart';
 import 'package:spark_store/_enum.dart';
 import 'package:spark_store/_http.dart';
@@ -146,8 +147,12 @@ class _MyHomePageState extends State<MyHomePage> {
           ContentArea(
             builder: (ctx, _) => (isLoading)
                 ? Center(
-                    child: ProgressCircle(
-                      value: null,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        GithubLoading()
+                      ],
                     ),
                   )
                 : SingleChildScrollView(

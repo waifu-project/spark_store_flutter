@@ -149,6 +149,15 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  github_loading:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: master
+      resolved-ref: "78eaffb5606a53ca765983d018203e1cb5b93326"
+      url: "git://github.com/d1y/github_loading"
+    source: git
+    version: "0.0.1"
   http:
     dependency: transitive
     description:
