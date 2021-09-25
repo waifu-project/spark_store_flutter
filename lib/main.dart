@@ -250,7 +250,9 @@ class _MyHomePageState extends State<MyHomePage> {
         ],
       ),
       sidebar: Sidebar(
+        topOffset: 12,
         minWidth: 200,
+        isResizable: false,
         bottom: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Row(
