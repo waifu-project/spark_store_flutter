@@ -13,8 +13,11 @@ import '_appicon.dart';
 class DetailPage extends StatefulWidget {
   final CategoryJson data;
 
+  final double maxWidth;
+
   DetailPage({
     Key? key,
+    required this.maxWidth,
     required this.data,
   }) : super(key: key);
 
@@ -40,6 +43,16 @@ class _DetailPageState extends State<DetailPage> {
     return _banners.length >= 1;
   }
 
+  double get _appIconSize {
+    double _m = 120;
+    double _n = 40;
+    double _w = widget.maxWidth;
+    double _offset = _w / 8;
+    if (_offset > _m) return _m;
+    if (_offset < _n) return _n;
+    return _offset;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -54,7 +67,8 @@ class _DetailPageState extends State<DetailPage> {
                   children: [
                     AppIcon(
                       url: widget.data.icons,
-                      width: 120,
+                      width: _appIconSize,
+                      height: _appIconSize,
                     ),
                     SizedBox(
                       height: 12,
@@ -74,6 +88,7 @@ class _DetailPageState extends State<DetailPage> {
                 width: 42,
               ),
               Expanded(
+                flex: 1,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [

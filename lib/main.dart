@@ -180,6 +180,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           ),
                           DetailPage(
                             data: currentDetailData,
+                            maxWidth: constraints.maxWidth,
                           ),
                         ][currentPagePoint.index];
                       },
