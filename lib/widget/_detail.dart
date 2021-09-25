@@ -6,6 +6,7 @@ import 'package:card_swiper/card_swiper.dart';
 import 'package:macos_ui/macos_ui.dart';
 import 'package:spark_store/config.dart';
 import 'package:spark_store/models/category_json.dart';
+import 'package:spark_store/utils/dpkg.dart';
 import 'package:spark_store/widget/_listItem.dart';
 
 import '_appicon.dart';
@@ -53,6 +54,16 @@ class _DetailPageState extends State<DetailPage> {
     return _offset;
   }
 
+  bool _appCanInstall = false;
+
+  @override
+  void initState() {
+    setState(() {
+      _appCanInstall = DpkgUtil.appCanInstalled(widget.data.pkgname);
+    });
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -74,13 +85,24 @@ class _DetailPageState extends State<DetailPage> {
                       height: 12,
                     ),
                     PushButton(
+                      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8,), 
                       color: Colors.blue,
-                      child: Text('Install'),
+                      child: Text(_appCanInstall ? 'Reinstall' : 'Install'),
                       buttonSize: ButtonSize.large,
                       onPressed: () {
                         print('button pressed');
                       },
                     ),
+                    _appCanInstall ? SizedBox(height: 12,) : SizedBox.shrink(),
+                    _appCanInstall ? PushButton(
+                      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8,), 
+                      color: Colors.black38,
+                      child: Text('UnInstall'),
+                      buttonSize: ButtonSize.large,
+                      onPressed: () {
+                        print('button pressed');
+                      },
+                    ) : SizedBox.shrink(),
                   ],
                 ),
               ),
