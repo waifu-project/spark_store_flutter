@@ -86,6 +86,13 @@ class _MyHomePageState extends State<MyHomePage> {
     return currentPagePoint == PagePoint.category;
   }
 
+  /// NOTE:
+  ///  => 只在详情页会有作用
+  ///  => TODO `url Scheme`
+  bool get doBackButton {
+    return currentPagePoint == PagePoint.detail;
+  }
+
   handleRefreshCurrentCategory() {
     setState(() {
       isLoading = true;
@@ -93,10 +100,42 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  handleBackCurrentCateggory() {
+    setState(() {
+      currentPagePoint = PagePoint.category;
+      _scrollController.animateTo(
+        _oldScrollOffsetSize,
+        duration: Duration(milliseconds: 800),
+        curve: Curves.ease,
+      );
+    });
+  }
+
+  ScrollController _scrollController = ScrollController(
+    debugLabel: "scroll",
+    initialScrollOffset: 0,
+    keepScrollOffset: true,
+  );
+
+  double _oldScrollOffsetSize = 0;
+
   @override
   void initState() {
+    _scrollController.addListener(() {
+      if (currentPagePoint == PagePoint.detail) return;
+      var offset = _scrollController.offset;
+      setState(() {
+        _oldScrollOffsetSize = offset;
+      });
+    });
     updateCategoryUI();
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
 
   @override
@@ -126,10 +165,10 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: SvgPicture.asset(
                   "assets/icons/category_active.svg",
                   fit: BoxFit.fill,
-                  color: Colors.white,
+                  color: doBackButton ? Colors.white : Colors.white12,
                   semanticsLabel: 'A red up arrow',
                 ),
-                onPressed: () {},
+                onPressed: doBackButton ? handleBackCurrentCateggory : null,
               ),
               SizedBox(width: 4.2),
               Expanded(
@@ -172,6 +211,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   )
                 : SingleChildScrollView(
                     physics: BouncingScrollPhysics(),
+                    controller: _scrollController,
                     child: LayoutBuilder(
                       builder: (
                         BuildContext context,
@@ -234,6 +274,7 @@ class _MyHomePageState extends State<MyHomePage> {
           return SidebarItems(
             currentIndex: currentCategory,
             onChanged: (index) {
+              if (currentCategory == index) return;
               _currentCategory = index;
               _currentPagePoint = PagePoint.category;
             },
