@@ -79,6 +79,20 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  /// NOTE:
+  ///  => 因为应用信息在 `app.json` 都已经存在
+  ///  => 所以并不需要重新通过 [HttpSend.getAppItemDesc] 接口获取到信息
+  bool get doRefreshButton {
+    return currentPagePoint == PagePoint.category;
+  }
+
+  handleRefreshCurrentCategory() {
+    setState(() {
+      isLoading = true;
+      updateCategoryUI();
+    });
+  }
+
   @override
   void initState() {
     updateCategoryUI();
@@ -99,10 +113,11 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: SvgPicture.asset(
                   "assets/icons/refresh-page.svg",
                   fit: BoxFit.fill,
-                  color: Colors.white,
+                  color: doRefreshButton ? Colors.white : Colors.white12,
                   semanticsLabel: 'A red up arrow',
                 ),
-                onPressed: () {},
+                onPressed:
+                    doRefreshButton ? handleRefreshCurrentCategory : null,
               ),
               SizedBox(width: 4.2),
               CupertinoButton(
@@ -151,7 +166,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        GithubLoading()
+                        GithubLoading(),
                       ],
                     ),
                   )
@@ -227,11 +242,12 @@ class _MyHomePageState extends State<MyHomePage> {
               ...CategoryData.map(
                 (e) => SidebarItem(
                   leading: SvgPicture.asset(
-                      "assets/icons/category_${e['icon']}.svg",
-                      width: 18,
-                      height: 18,
-                      color: Colors.white,
-                      semanticsLabel: 'A red up arrow'),
+                    "assets/icons/category_${e['icon']}.svg",
+                    width: 18,
+                    height: 18,
+                    color: Colors.white,
+                    semanticsLabel: 'A red up arrow',
+                  ),
                   label: Text((e['title'] ?? "").capitalize()),
                 ),
               ).toList(),
