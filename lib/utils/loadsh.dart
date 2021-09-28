@@ -1,5 +1,7 @@
 // https://github.com/dart-league/validators/blob/master/lib/validators.dart
 
+import 'dart:io';
+
 import 'package:url_launcher/url_launcher.dart';
 
 shift(List l) {
@@ -190,3 +192,7 @@ bool isFQDN(String str,
 
 void launchURL(_url) async =>
     await canLaunch(_url) ? await launch(_url) : throw 'Could not launch $_url';
+
+void wrapperXdgOpen(String _open) {
+  Process.runSync("xdg-open", [_open]);
+}
