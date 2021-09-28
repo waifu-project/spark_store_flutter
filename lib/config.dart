@@ -61,5 +61,6 @@ const List<Map<String, String>> CategoryData = [
   },
 ];
 
-const DefaultAppIcon =
-    "https://d.store.deepinos.org.cn//store/tools/dde-dock-graphics-plugin/icon.png";
+const DefaultMirrorBaseURL = "https://d.store.deepinos.org.cn";
+
+const DefaultAppIcon = "${ DefaultMirrorBaseURL }/store/tools/dde-dock-graphics-plugin/icon.png";
