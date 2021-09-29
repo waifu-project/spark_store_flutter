@@ -4,7 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:card_swiper/card_swiper.dart';
 import 'package:macos_ui/macos_ui.dart';
-import 'package:spark_store/config.dart';
+import 'package:spark_store/_enum.dart';
 import 'package:spark_store/models/category_json.dart';
 import 'package:spark_store/utils/dpkg.dart';
 import 'package:spark_store/widget/_listItem.dart';
@@ -16,10 +16,13 @@ class DetailPage extends StatefulWidget {
 
   final double maxWidth;
 
+  final void Function(AptCenterAction action) onAppTap;
+
   DetailPage({
     Key? key,
     required this.maxWidth,
     required this.data,
+    required this.onAppTap,
   }) : super(key: key);
 
   @override
@@ -85,24 +88,37 @@ class _DetailPageState extends State<DetailPage> {
                       height: 12,
                     ),
                     PushButton(
-                      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8,), 
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 8,
+                      ),
                       color: Colors.blue,
                       child: Text(_appCanInstall ? 'Reinstall' : 'Install'),
                       buttonSize: ButtonSize.large,
                       onPressed: () {
-                        print('button pressed');
+                        var action = _appCanInstall ? AptCenterAction.Reinstall : AptCenterAction.Install;
+                        widget.onAppTap(action);
                       },
                     ),
-                    _appCanInstall ? SizedBox(height: 12,) : SizedBox.shrink(),
-                    _appCanInstall ? PushButton(
-                      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8,), 
-                      color: Colors.black38,
-                      child: Text('UnInstall'),
-                      buttonSize: ButtonSize.large,
-                      onPressed: () {
-                        print('button pressed');
-                      },
-                    ) : SizedBox.shrink(),
+                    _appCanInstall
+                        ? SizedBox(
+                            height: 12,
+                          )
+                        : SizedBox.shrink(),
+                    _appCanInstall
+                        ? PushButton(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 8,
+                            ),
+                            color: Colors.black38,
+                            child: Text('UnInstall'),
+                            buttonSize: ButtonSize.large,
+                            onPressed: () {
+                              widget.onAppTap(AptCenterAction.Uninstall);
+                            },
+                          )
+                        : SizedBox.shrink(),
                   ],
                 ),
               ),

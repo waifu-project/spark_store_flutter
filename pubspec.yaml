@@ -40,6 +40,10 @@ dependencies:
   
   cached_network_image: ^3.1.0
 
+  localstorage: ^4.0.0+1
+
+  path_provider: ^2.0.5
+
   github_loading:
     git:
       url: git://github.com/d1y/github_loading
