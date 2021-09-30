@@ -165,8 +165,10 @@ class _MyHomePageState extends State<MyHomePage> {
     // var x = widget.local.getItem("task");
     // print(x);
 
-    setState(() {
-      _tasks = getAllDownloadTask();
+    mergeGetLocalDataTask().then((_) {
+      setState(() {
+        _tasks = _;
+      });
     });
 
     _scrollController.addListener(() {
@@ -189,6 +191,14 @@ class _MyHomePageState extends State<MyHomePage> {
   handleAptAction(AptCenterAction action) {
     if (action != AptCenterAction.Install) return;
     var _ = createNewDownloadManger();
+
+    /// NOTE:
+    ///  该方法会push一个新的下载对象,
+    ///  但是需要提前判断其是否已经在当前 [tasks] 中
+    var taskExists = _tasks.any((element) {
+      return currentDetailData.pkgname == element['pkgName'];
+    });
+    if (taskExists) return;
     if (_ == null) return;
     asyncAddDownloadItem(_);
   }
@@ -210,14 +220,40 @@ class _MyHomePageState extends State<MyHomePage> {
     }
     if (!taskExist) {
       dm.add(item);
+      setState(() {
+        _tasks.add(item);
+        handleDownloadManaer(DownloadRightAction.download, _tasks.length - 1);
+      });
       widget.local.setItem(_DMkey, dm);
     }
+  }
+
+  asyncSaveDownloadCache() async {
+    return await widget.local.setItem(_DMkey, _tasks);
   }
 
   List<Map<String, dynamic>> getAllDownloadTask() {
     var _ = widget.local.getItem(_DMkey).cast<Map<String, dynamic>>();
     if (_ != null) return (_ as List<Map<String, dynamic>>);
     return [];
+  }
+
+  Future<List<Map<String, dynamic>>> mergeGetLocalDataTask() async {
+    var _ = getAllDownloadTask();
+    List<Map<String, dynamic>> _r = [];
+    for (var i = 0; i < _.length; i++) {
+      var _item = _[i];
+      var f = _item['filepath'];
+      File file = File(f);
+      double _size = 0;
+      if (file.existsSync()) {
+        _size = (await file.length()) / 1024 / 1024;
+      }
+      _item['download_size'] = _size;
+      _item['is_download'] = _item['total_size'] == _size;
+      _r.add(_item);
+    }
+    return _r;
   }
 
   Map<String, dynamic>? createNewDownloadManger() {
@@ -246,6 +282,59 @@ class _MyHomePageState extends State<MyHomePage> {
       "is_download": false
     };
     return data;
+  }
+
+  handleRemoveOnceDownloadItem(int index) {
+    try {
+      Map<String, dynamic> _item = _tasks[index];
+      File file = File(_item['filepath']);
+      if (file.existsSync()) {
+        file.deleteSync();
+      }
+      setState(() {
+        _tasks.removeAt(index);
+      });
+      asyncSaveDownloadCache();
+    } catch (e) {}
+  }
+
+  handleDownloadManaer(DownloadRightAction action, int index) {
+    if (action == DownloadRightAction.remove) {
+      handleRemoveOnceDownloadItem(index);
+      return;
+    }
+    var item = _tasks[index];
+    var url = item['download_url'];
+    if (item['start_download'] ?? false) {
+      DownloadFile.cancelDownload(url);
+      setState(() {
+        _tasks[index]['start_download'] = false;
+      });
+      return;
+    }
+    DownloadFile.download(
+      url: url,
+      savePath: item['filepath'],
+      onReceiveProgress: (count, total) {
+        // print("count: $count, total: $total");
+        setState(() {
+          _tasks[index]['total_size'] = total / 1024 / 1024;
+          _tasks[index]['download_size'] = count / 1024 / 1024;
+          _tasks[index]['start_download'] = true;
+        });
+      },
+      done: () {
+        setState(() {
+          _tasks[index]['is_download'] = true;
+          _tasks[index]['start_download'] = false;
+          asyncSaveDownloadCache();
+        });
+      },
+      failed: (dio) {
+        _tasks[index]['start_download'] = false;
+        // TODO show dio error message
+      },
+    );
   }
 
   @override
@@ -357,31 +446,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             width: constraints.maxWidth,
                             height: MediaQuery.of(context).size.height - 52.00,
                             tasks: _tasks,
-                            onTap: (action, index) {
-                              if (action == DownloadRightAction.remove) return;
-                              var item = _tasks[index];
-                              DownloadFile.download(
-                                url: item['download_url'],
-                                savePath: item['filepath'],
-                                onReceiveProgress: (count, total) {
-                                  print("count: $count, total: $total");
-                                  setState(() {
-                                    _tasks[index]['total_size'] =
-                                        total / 1024 / 1024;
-                                    _tasks[index]['download_size'] =
-                                        count / 1024 / 1024;
-                                  });
-                                },
-                                done: () {
-                                  setState(() {
-                                    _tasks[index]['is_download'] = true;
-                                  });
-                                },
-                                failed: (dio) {
-                                  // TODO show dio error message
-                                },
-                              );
-                            },
+                            onTap: handleDownloadManaer,
                           ),
                         ][currentPagePoint.index];
                       },

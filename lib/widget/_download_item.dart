@@ -1,4 +1,6 @@
+import 'package:clipboard/clipboard.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:macos_ui/macos_ui.dart';
 
 import '../_enum.dart';
 import '_appicon.dart';
@@ -26,6 +28,7 @@ class _DownloadTaskItemState extends State<DownloadTaskItem> {
   String get humanTotalSizeAndDownloadSize {
     double t = item['total_size'] * 1.0;
     double d = item['download_size'] * 1.0;
+    if (t == d) return 'Downloaded';
     var _beforeT = 'MB';
     var _beforeD = 'MB';
     if (t >= 1024) {
@@ -37,8 +40,9 @@ class _DownloadTaskItemState extends State<DownloadTaskItem> {
       _beforeD = 'GB';
     }
     var _t = t.toStringAsFixed(2);
+    if (d == 0) return '${_t} ${_beforeT}';
     var _d = d.toStringAsFixed(2);
-    return '${_d}${_beforeD}/${_t}${_beforeT}';
+    return '${_d} ${_beforeD}/${_t} ${_beforeT}';
   }
 
   double get percentage {
@@ -104,21 +108,32 @@ class _DownloadTaskItemState extends State<DownloadTaskItem> {
               ),
             ),
           ),
-          CupertinoButton(
-            padding: EdgeInsets.zero,
-            onPressed: () {
-              widget.onTap(DownloadRightAction.download);
-            },
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  CupertinoIcons.cloud_download,
-                  semanticLabel: 'download',
+          !(item['is_download'] ?? false)
+              ? CupertinoButton(
+                  padding: EdgeInsets.zero,
+                  onPressed: () {
+                    widget.onTap(DownloadRightAction.download);
+                  },
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        (item['start_download'] ?? false)
+                            ? CupertinoIcons.pause_circle
+                            : CupertinoIcons.cloud_download,
+                        semanticLabel: 'download',
+                      ),
+                    ],
+                  ),
+                )
+              : PushButton(
+                  child: Text('Copy Code'),
+                  buttonSize: ButtonSize.large,
+                  onPressed: () async {
+                    await FlutterClipboard.copy(
+                        'sudo dpkg -i ${item['filepath']} || apt install -yf || dpkg -P ${item['filepath']}');
+                  },
                 ),
-              ],
-            ),
-          ),
           CupertinoButton(
             padding: EdgeInsets.zero,
             onPressed: () {

@@ -105,4 +105,9 @@ class DownloadFile {
     downloadingUrls[url]?.cancel();
     downloadingUrls.remove(url);
   }
+
+  /// 检测是否在下载
+  static bool isDownload(String url) {
+    return downloadingUrls.containsKey(url);
+  }
 }
