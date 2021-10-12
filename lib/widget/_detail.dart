@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -215,8 +216,25 @@ class _DetailPageState extends State<DetailPage> {
                           var _ = _banners[index];
                           return GestureDetector(
                             onTap: () {
-                              // TODO preview image
-                              // showScreenshot(context);
+                              showDialog(
+                                context: context,
+                                builder: (__) {
+                                  return GestureDetector(
+                                    onTap: () {
+                                      Navigator.pop(context);
+                                    },
+                                    child: BackdropFilter(
+                                      filter: ImageFilter.blur(
+                                        sigmaX: 10,
+                                        sigmaY: 10,
+                                      ),
+                                      child: Dialog(
+                                        child: Image.network(_),
+                                      ),
+                                    ),
+                                  );
+                                }
+                              );
                             },
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(12),
