@@ -263,28 +263,3 @@ class _DetailPageState extends State<DetailPage> {
     );
   }
 }
-
-// showScreenshot(BuildContext context) {
-//   showDialog(
-//     context: context,
-//     builder: (_) => MacosAlertDialog(
-//       appIcon: FlutterLogo(
-//         size: 56,
-//       ),
-//       title: Text(
-//         'Alert Dialog with Primary Action',
-//         style: MacosTheme.of(context).typography.headline,
-//       ),
-//       message: Text(
-//         'This is an alert dialog with a primary action and no secondary action',
-//         textAlign: TextAlign.center,
-//         style: MacosTheme.of(context).typography.headline,
-//       ),
-//       primaryButton: PushButton(
-//         buttonSize: ButtonSize.large,
-//         child: Text('Primary'),
-//         onPressed: () {},
-//       ),
-//     ),
-//   );
-// }

@@ -172,7 +172,11 @@ class _MyHomePageState extends State<MyHomePage> {
     });
 
     _scrollController.addListener(() {
-      if (currentPagePoint == PagePoint.detail) return;
+
+      // NOTE:
+      //  => 详情页和下载页不需要记忆滑动
+      //
+      if (currentPagePoint == PagePoint.detail || currentPagePoint == PagePoint.download) return;
       var offset = _scrollController.offset;
       setState(() {
         _oldScrollOffsetSize = offset;
@@ -461,6 +465,7 @@ class _MyHomePageState extends State<MyHomePage> {
         isResizable: false,
         bottom: GestureDetector(
           onTap: () {
+            _scrollController.jumpTo(0);
             _currentPagePoint = PagePoint.download;
           },
           child: AnimatedContainer(
