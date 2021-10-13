@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=星火商店
+Comment=spark store
+Exec=/usr/bin/spark_store
+Icon=/usr/share/icons/spark_store.png
+Terminal=false
+Type=Application
+X-Ubuntu-Touch=true
+Categories=Development

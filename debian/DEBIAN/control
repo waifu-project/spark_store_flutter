@@ -1,0 +1,11 @@
+Source: spark_store
+Section: unknown
+Priority: optional
+Maintainer: d1y <d1y@unknown>
+Build-Depends: debhelper-compat (= 12)
+Standards-Version: 4.4.1
+Version: 1.2.4-release
+Homepage: https://github.com/d1y
+Package: sparkstore
+Architecture: any
+Description: 星火商店
